@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style type="text/css">
+        #sample {
+            border: 1px dotted #666;
+            text-align: center;
+        }
+
+        #sample h2 {
+            text-align: center;
+        }
+
+        #sample p {
+            text-align: center;
+            padding: .4em 3em 0em;
+        }
+
+        #my-form #align {
+            box-sizing: border-box;
+            width: 96%;
+            text-align: center;
+            margin: 0 2%;
+            padding: 2em;
+        }
+
+        #my-form .data-entry {
+            padding: .1em .5em;
+        }
+
+        #my-form textarea {
+            padding: .1em 8%;
+        }
+
+        #my-form p {
+            margin: .1em 0;
+            text-align: center;
+        }
+
+        #my-form select {
+            margin-bottom: 1em;
+        }
+
+        #my-form select {
+            margin-bottom: 1em;
+            font-size: 95%;
+            padding: .1em .5em;
+        }
+
+        #my-form .button {
+            width: 80px;
+            height: 30px;
+            font-size: 110%;
+            margin: .4em;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="sample">
+        <h2>HDB Price Checker</h2>
+        <p>Please complete the information below and click Submit.</p>
+        <form id="my-form" action="/cgi-bin/umbrella.pl" method="post">
+            <div id="align">
+                <p>FLAT TYPE:</p>
+                <select id="flat_type">
+                    <option selected="selected" value="1">1 ROOM</option>
+                    <option value="2">2 ROOM</option>
+                    <option value="3">3 ROOM</option>
+                    <option value="4">4 ROOM</option>
+                    <option value="5">5 ROOM</option>
+                    <option value="6">EXECUTIVE</option>
+                    <option value="7">MULTI-GENERATION</option>
+                </select><br /><br />
+                <label for="floor_area_sqm">FLOOR AREA (SQM):</label><br />
+                <span><input type="text" name="floor_area_sqm" id="floor_area_sqm" class="data-entry" required/></span><br /><br />
+                <label for="lease_commence_date">LEASE COMMENCEMENT YEAR:</label><br />
+                <span><input type="text" name="lease_commence_date" id="lease_commence_date" class="data-entry" required/></span><br /><br />
+                <p>FLOOR:</p>
+                <select id="storey_range">
+                    <option selected="selected" value="1">01 TO 03</option>
+                    <option value="2">04 TO 06</option>
+                    <option value="3">07 TO 09</option>
+                    <option value="4">10 TO 12</option>
+                    <option value="5">13 TO 15</option>
+                    <option value="6">22 TO 24</option>
+                    <option value="7">16 TO 18</option>
+                    <option value="8">19 TO 21</option>
+                    <option value="9">28 TO 30</option>
+                    <option value="10">25 TO 27</option>
+                    <option value="11">43 TO 45</option>
+                    <option value="12">31 TO 33</option>
+                    <option value="13">46 TO 48</option>
+                    <option value="14">37 TO 39</option>
+                    <option value="15">34 TO 36</option>
+                    <option value="16">40 TO 42</option>
+                    <option value="17">49 TO 51</option>
+                </select><br /><br />
+                <p>TOWN:</p>
+                <select id="town">
+                    <option selected="selected" value="1">ANG MO KIO</option>
+                    <option value="2">BEDOK</option>
+                    <option value="3">BISHAN</option>
+                    <option value="4">BUKIT BATOK</option>
+                    <option value="5">BUKIT MERAH</option>
+                    <option value="6">BUKIT PANJANG</option>
+                    <option value="7">BUKIT TIMAH</option>
+                    <option value="8">CENTRAL AREA</option>
+                    <option value="9">CHOA CHU KANG</option>
+                    <option value="10">GEYLANG</option>
+                    <option value="11">CLEMENTI</option>
+                    <option value="12">HOUGANG</option>
+                    <option value="13">JURONG EAST</option>
+                    <option value="14">JURONG WEST</option>
+                    <option value="15">KALLANG/WHAMPOA</option>
+                    <option value="16">MARINE PARADE</option>
+                    <option value="17">PASIR RIS</option>
+                    <option value="18">PUNGGOL</option>
+                    <option value="19">QUEENSTOWN</option>
+                    <option value="20">SEMBAWANG</option>
+                    <option value="21">SENGKANG</option>
+                    <option value="22">SERANGOON</option>
+                    <option value="23">TAMPINES</option>
+                    <option value="24">TOA PAYOH</option>
+                    <option value="25">WOODLANDS</option>
+                    <option value="26">YISHUN</option>
+                </select><br /><br />
+                <span>
+                    <input type="button" class="button" value="SUBMIT"
+                        onclick="process()" /></span><br />
+            </div>
+            <h2 id="result" style="display: none">Estimated Price: $200</h2>
+            <!--end div align-->
+        </form>
+    </div>
+    <!--end div sample-->
+</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+<script>
+    function process() {
+        $("#result").hide()
+        var flat_type = $( "#flat_type" ).val()
+        var floor_area_sqm = $( "#floor_area_sqm" ).val()
+        var lease_commence_date = $( "#lease_commence_date" ).val()
+        var storey_range = $( "#storey_range" ).val()
+        var town = $( "#town" ).val()
+        
+        $.post( "/api", { "flat_type": flat_type, "floor_area_sqm": floor_area_sqm, "lease_commence_date": lease_commence_date, "storey_range": storey_range, "town": town })
+        .done(function( data ) {
+            data = JSON.parse(data)
+            $("#result").text("Estimated Price: $" + data["prediction"])  
+            $("#result").show()
+        });
+        
+        return false;
+    }
+    function reset() {
+        $("#result").hide()
+    }
+</script>
+</html>
